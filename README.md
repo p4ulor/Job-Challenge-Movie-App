@@ -43,6 +43,8 @@ Hilt dependency injection with multiple modules
 > [!NOTE]
 > No library was indicated for the HTTP Client. So I chose [Ktor](https://ktor.io/docs/client-create-new-application.html). JFYI: Some legacy projects use Hilt with the anottation processor KAPT. The standart is now KSP [which is 2 times faster](https://kotlinlang.org/docs/ksp-overview.html).
 >
+> No library was indicated for loading Images from the API. There is still [no built-in way to load non-local-app Images](https://developer.android.com/develop/ui/compose/graphics/images/loading#internet-loading). So I chose [Coil](https://coil-kt.github.io/coil/)
+> 
 > I'm more used to and prefer Koin for Kotlin Injection. It's my first time using Hilt
 >
 > I used [version catalog](https://developer.android.com/build/migrate-to-catalogs) of the dependencies which is now the standard for organizing dependencies
@@ -50,6 +52,8 @@ Hilt dependency injection with multiple modules
 > All dependencies added are followed by "Added:"
 > 
 > Kotlin version used: 2.2.0 (set in `gradle/libs.versions.toml`)
+> 
+> I added a unit test to test the API in an initial phase (was done before starting the UI)
 
 ## API docs
 - API rate limiting: 50 req/s - https://developer.themoviedb.org/docs/rate-limiting

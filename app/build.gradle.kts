@@ -60,8 +60,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    testImplementation(libs.junit)
-    // Dependencies not used since this challenge doesn't require testing, this is mainly to speed up builds
+    // Dependencies not used since this challenge doesn't require testing, this is commented out to speed up builds
+    // testImplementation(libs.junit)
     // androidTestImplementation(libs.androidx.junit)
     // androidTestImplementation(libs.androidx.espresso.core)
     // androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -71,11 +71,12 @@ dependencies {
     // Hilt
     implementation(libs.google.hilt.android)
     ksp(libs.google.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose) // So we can use hiltViewModel()
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
 
-    // Icons
+    // Extendded Icons
     implementation(libs.androidx.material.icons.extended.android)
 
     // Datastore, to store app settings (the bearer token)
@@ -86,6 +87,15 @@ dependencies {
     implementation(libs.ktor.client.cio) // Coroutine-based I/O Engine for processing network requests https://ktor.io/docs/client-engines.html#jvm-android-native
     implementation(libs.ktor.client.content.negotiation) // Used for Serialization of JSONs https://ktor.io/docs/client-serialization.html
     implementation(libs.ktor.serialization.kotlinx.json) // Used for Serialization. The annotations are processed by the kotlinxSerialization Gradle Plugin
+    implementation(libs.ktor.client.auth) // To allow the use of Bearer token
+
+    // Coil, for loading images outside of the app (not in app resources) and supporting Base64
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
+    // kotlin.test for utility methods to allow parameter naming, while JUnit does not
+    testImplementation(kotlin("test"))
+    testImplementation(libs.coroutines.test)
 }
 
 /**

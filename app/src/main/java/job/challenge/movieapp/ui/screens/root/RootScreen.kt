@@ -21,8 +21,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import job.challenge.movieapp.android.activities.utils.getActivity
-import job.challenge.movieapp.ui.screens.movie.MovieDetailsScreen
-import job.challenge.movieapp.ui.screens.movie.MovieListScreen
+import job.challenge.movieapp.ui.screens.movie.details.MovieDetailsScreen
+import job.challenge.movieapp.ui.screens.movie.list.MovieListScreen
 
 @Composable
 fun RootScreen() = Surface {

@@ -1,5 +1,5 @@
 package job.challenge.movieapp.data.domain
 
-class MovieList {
-
-}
+data class MovieList(
+    val movies: String
+)
