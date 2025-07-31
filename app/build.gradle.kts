@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +8,7 @@ plugins {
     // Added:
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.google.hilt)
+    alias(libs.plugins.kotlinxSerialization) // To process @Serializable annotations
 }
 
 android {
@@ -40,6 +43,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true // Adds access BuildConfig obj
     }
 }
 
@@ -56,8 +60,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    testImplementation(libs.junit)
     // Dependencies not used since this challenge doesn't require testing, this is mainly to speed up builds
-    // testImplementation(libs.junit)
     // androidTestImplementation(libs.androidx.junit)
     // androidTestImplementation(libs.androidx.espresso.core)
     // androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -76,4 +80,21 @@ dependencies {
 
     // Datastore, to store app settings (the bearer token)
     implementation(libs.androidx.datastore.preferences)
+
+    // Ktor (HTTP client)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio) // Coroutine-based I/O Engine for processing network requests https://ktor.io/docs/client-engines.html#jvm-android-native
+    implementation(libs.ktor.client.content.negotiation) // Used for Serialization of JSONs https://ktor.io/docs/client-serialization.html
+    implementation(libs.ktor.serialization.kotlinx.json) // Used for Serialization. The annotations are processed by the kotlinxSerialization Gradle Plugin
+}
+
+/**
+ * Enables context receivers
+ * https://kotlinlang.org/docs/whatsnew1620.html#prototype-of-context-receivers-for-kotlin-jvm
+ * https://kotlinlang.org/docs/whatsnew2020.html#phased-replacement-of-context-receivers-with-context-parameters
+ */
+tasks.withType<KotlinCompile> {
+    compilerOptions {
+        freeCompilerArgs = listOfNotNull("-Xcontext-receivers")
+    }
 }
