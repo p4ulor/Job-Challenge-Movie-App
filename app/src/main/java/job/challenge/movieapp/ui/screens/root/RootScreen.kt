@@ -40,6 +40,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -88,7 +89,11 @@ fun RootScreen() = Surface {
             TopAppBar(
                 title = {
                     CenteredRow {
-                        EzText(R.string.app_name, Modifier.offset(x = -MaterialIconsExt.MenuOpen.defaultWidth)) // offset to center the text
+                        EzText(
+                            R.string.app_name,
+                            Modifier.offset(x = -MaterialIconsExt.MenuOpen.defaultWidth),
+                            textAlign = TextAlign.Center
+                        ) // offset to center the text
                     }
                 },
                 navigationIcon = {

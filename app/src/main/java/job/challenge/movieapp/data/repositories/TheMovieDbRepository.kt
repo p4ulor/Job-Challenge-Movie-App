@@ -7,6 +7,7 @@ import job.challenge.movieapp.data.client.KtorHttpClient
 import job.challenge.movieapp.data.client.handle
 import job.challenge.movieapp.data.domain.HttpError
 import job.challenge.movieapp.data.domain.NoBearerTokenSet
+import job.challenge.movieapp.data.domain.PresetException
 import job.challenge.movieapp.data.local.preferences.UserPreferences
 import job.challenge.movieapp.data.local.preferences.dataStore
 import job.challenge.movieapp.e
@@ -23,7 +24,7 @@ class TheMovieDbRepository @Inject constructor(
      * Gets a list of movies that are currently in theatres.
      * https://developer.themoviedb.org/reference/movie-now-playing-list
      */
-    @Throws(NoBearerTokenSet::class)
+    @Throws(PresetException::class)
     override suspend fun getNowPlaying(): MoviesNowPlayingResponse {
         checkAuthorization()
         val path = TheMovieDbApiEndpoints.Resources.Movie.NowPlaying.path
@@ -43,7 +44,7 @@ class TheMovieDbRepository @Inject constructor(
      * Get the top level details of a movie by ID.
      * https://developer.themoviedb.org/reference/movie-details
      */
-    @Throws(NoBearerTokenSet::class)
+    @Throws(PresetException::class)
     override suspend fun getMovieById(id: Int): MovieResponse {
         checkAuthorization()
         val path = TheMovieDbApiEndpoints.Resources.Movie.Get(id).path

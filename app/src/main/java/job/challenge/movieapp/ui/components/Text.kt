@@ -11,6 +11,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 
@@ -26,10 +27,12 @@ fun EzText(
     fontFamily: FontFamily? = null,
     maxLines: Int = Int.MAX_VALUE,
     textStyle: TextStyle = LocalTextStyle.current,
+    textAlign: TextAlign? = null,
     overflow: TextOverflow = TextOverflow.Ellipsis,
     onTextOverflow: () -> Unit = {}
 ) = Text(
     stringResource(text), modifier, color, fontSize, fontStyle, fontWeight, fontFamily,
+    textAlign = textAlign,
     maxLines = maxLines,
     style = textStyle,
     overflow = overflow,

@@ -2,9 +2,11 @@ package job.challenge.movieapp.data.domain
 
 import job.challenge.movieapp.data.repositories.ErrorResponse
 
-class NoBearerTokenSet: Exception("No bearer token set")
+open class PresetException(message: String) : Exception(message)
+
+class NoBearerTokenSet : PresetException("No bearer token set")
 
 class HttpError(
-    val body: ErrorResponse,
+    body: ErrorResponse,
     errorCode: Int
-): Exception("HTTP error occured with code $errorCode")
+): PresetException("HTTP Error: ${body.status_message}")

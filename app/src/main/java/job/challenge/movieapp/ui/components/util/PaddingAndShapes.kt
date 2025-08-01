@@ -21,6 +21,7 @@ val TinyPadding = 2.dp
 val SmallPadding = 4.dp
 val SmallMediumPadding = 8.dp
 val MediumPadding = 12.dp
-val MediumLarge = 24.dp
+val MediumLargePadding = 24.dp
+val LargePadding = 48.dp
 
 val RoundRectangleShape: Shape = RoundedCornerShape(30f)

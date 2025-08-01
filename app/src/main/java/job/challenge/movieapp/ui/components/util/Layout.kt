@@ -15,11 +15,12 @@ import androidx.compose.ui.unit.Dp
 @Composable
 fun CenteredColumn(
     modifier: Modifier = Modifier.fillMaxSize(),
+    verticalSpacing: Dp = SmallMediumPadding,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(
-        modifier,
-        verticalArrangement = Arrangement.Center,
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(verticalSpacing, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         content()
@@ -29,15 +30,12 @@ fun CenteredColumn(
 @Composable
 fun CenteredRow(
     modifier: Modifier = Modifier.fillMaxWidth(),
-    horizontalPadding: Dp = SmallMediumPadding,
+    horizontalSpacing: Dp = SmallMediumPadding,
     content: @Composable RowScope.() -> Unit
 ) {
     Row(
         modifier,
-        horizontalArrangement = Arrangement.spacedBy(
-            space = horizontalPadding,
-            alignment = Alignment.CenterHorizontally
-        ),
+        horizontalArrangement = Arrangement.spacedBy(horizontalSpacing, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically
     ) {
         content()

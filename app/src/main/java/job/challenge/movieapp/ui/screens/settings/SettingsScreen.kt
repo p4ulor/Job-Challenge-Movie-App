@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import job.challenge.movieapp.R
@@ -71,7 +72,8 @@ fun SettingsScreenUi(storedToken: String?, onSetBearerToken: (newToken: String) 
 
         EzText(
             R.string.setup_token,
-            textStyle = MaterialTheme.typography.titleMedium
+            textStyle = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center
         )
 
         Spacer(Modifier.size(MediumPadding))
@@ -82,7 +84,7 @@ fun SettingsScreenUi(storedToken: String?, onSetBearerToken: (newToken: String) 
             Modifier
                 .fillMaxWidth()
                 .padding(MediumPadding),
-            label = { EzText(R.string.bearer_token) },
+            label = { EzText(R.string.bearer_token, textAlign = TextAlign.Center) },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done // Input Method Editor Action
@@ -114,7 +116,7 @@ fun SettingsScreenUi(storedToken: String?, onSetBearerToken: (newToken: String) 
                 }
             }
         ) {
-            EzText(R.string.save)
+            EzText(R.string.save, textAlign = TextAlign.Center)
         }
     }
 }
