@@ -3,4 +3,8 @@
     <string name="no_internet_connection">No internet connection</string>
     <string name="user_not_authenticated">User not authenticated</string>
     <string name="please_setup_the_bearer_token">Please setup the bearer token</string>
+    <string name="setup_token">Setup your TMDB token</string>
+    <string name="bearer_token">Bearer token</string>
+    <string name="save">Save</string>
+    <string name="saved_gemini_key">Token saved</string>
 </resources>

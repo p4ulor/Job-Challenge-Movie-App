@@ -10,12 +10,12 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.automirrored.filled.MenuOpen
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,15 +33,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
@@ -52,9 +49,11 @@ import job.challenge.movieapp.android.activities.utils.getActivity
 import job.challenge.movieapp.ui.components.EzText
 import job.challenge.movieapp.ui.components.MaterialIcons
 import job.challenge.movieapp.ui.components.MaterialIconsExt
+import job.challenge.movieapp.ui.components.util.CenteredRow
 import job.challenge.movieapp.ui.components.util.SystemNavigationBarHeight
 import job.challenge.movieapp.ui.screens.movie.details.MovieDetailsScreen
 import job.challenge.movieapp.ui.screens.movie.list.MovieListScreen
+import job.challenge.movieapp.ui.screens.settings.SettingsScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,15 +65,20 @@ fun RootScreen() = Surface {
 
     var currentScreen by rememberSaveable { mutableStateOf(Screen.MovieList) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-    var selectedItem by rememberSaveable { mutableStateOf<ImageVector?>(null) }
-    val drawerItems = listOf(
-        MaterialIcons.AccountCircle,
-        //MaterialIcons.Favorite
-    )
+    val drawerItems = listOf(Screen.MovieList, Screen.AccountSettings)
 
     val navigateTo: (Screen) -> Unit = {
         currentScreen = it
         navController.navigate(currentScreen.name)
+    }
+
+    val withDrawer: @Composable (screen: @Composable () -> Unit) -> Unit =  { screen ->
+        ScreenWithDrawer(drawerState, drawerItems, currentScreen,
+            onNewScreenSelected = { screen ->
+                navigateTo(screen)
+            },
+            screen = screen
+        )
     }
 
     Scaffold(
@@ -82,7 +86,11 @@ fun RootScreen() = Surface {
         contentWindowInsets = WindowInsets(bottom = SystemNavigationBarHeight), // Only disable enableEdgeToEdge to the bottom bar
         topBar = {
             TopAppBar(
-                title = { EzText(R.string.app_name) },
+                title = {
+                    CenteredRow {
+                        EzText(R.string.app_name, Modifier.offset(x = -MaterialIconsExt.MenuOpen.defaultWidth)) // offset to center the text
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = {
                         scope.launch {
@@ -109,15 +117,9 @@ fun RootScreen() = Surface {
                 enterTransition = { EnterTransition.None }, // Improves performance, leave animations to the screens not the NavHost. Only they know when they are ready to display content
                 exitTransition = { ExitTransition.None } // Same reason as above
             ) {
-                composable(route = Screen.MovieList.name) {
-                    ScreenWithDrawer(drawerState, drawerItems, selectedItem,
-                    onNewItemSelected = {
-                        selectedItem = it
-                    }) {
-                        MovieListScreen()
-                    }
-                }
-                composable(route = Screen.MovieDetails.name) { MovieDetailsScreen() }
+                composable(route = Screen.MovieList.name) { withDrawer { MovieListScreen() } }
+                composable(route = Screen.MovieDetails.name) { withDrawer { MovieDetailsScreen() } }
+                composable(route = Screen.AccountSettings.name) { withDrawer { SettingsScreen() } }
             }
 
             BackHandler { // Should be placed after NavHost, so it's BackHandler is overridden by this
@@ -136,9 +138,9 @@ fun RootScreen() = Surface {
 @Composable
 fun ScreenWithDrawer(
     drawerState: DrawerState,
-    drawerItems: List<ImageVector>,
-    selectedItem: ImageVector?,
-    onNewItemSelected: (ImageVector) -> Unit,
+    drawerItems: List<Screen>,
+    currentScreen: Screen,
+    onNewScreenSelected: (Screen) -> Unit,
     screen: @Composable () -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -151,13 +153,13 @@ fun ScreenWithDrawer(
                     drawerItems.forEach { item ->
                         NavigationDrawerItem(
                             label = { Text(item.name.substringAfterLast(".")) },
-                            selected = item.name == selectedItem?.name,
+                            selected = item.name == currentScreen?.name,
                             onClick = {
                                 scope.launch { drawerState.close() }
-                                onNewItemSelected(item)
+                                onNewScreenSelected(item)
                             },
                             Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                            icon = { Icon(item, contentDescription = null) },
+                            icon = { Icon(item.icon ?: MaterialIcons.QuestionMark, contentDescription = item.icon?.name) },
                         )
                     }
                 }

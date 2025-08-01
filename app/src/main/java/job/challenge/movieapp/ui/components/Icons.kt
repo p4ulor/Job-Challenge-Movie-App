@@ -1,30 +1,41 @@
 package job.challenge.movieapp.ui.components
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import job.challenge.movieapp.R
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons as ComposeMaterialIcons
-
-sealed class Icon private constructor() {
-    data class App(val resourcesIcon: ResourcesIcon) : Icon()
-    data class Material(val materialIcon: ImageVector) : Icon()
-
-    val asAppIcon get() = this as? App
-    val asMaterialIcon get() = this as? Material
-}
-
-/**
- * Drawable resources that are either .xml (can be created from an .svg, a vector image) or .png
- * To convert .svg to .xml, you can use [Android's Asset Studio](https://stackoverflow.com/a/56276118/28417805)
- * Or use https://svg2vector.com/ to convert .svg from https://lucide.dev/icons/
- * to android .xml. All with stroke width 1.5px, size 300px (scaled up by opening the .svg in Gimp
- * and saving it as .png)
- * @param [resourceId] a .png or .xml
- */
-enum class ResourcesIcon(val resourceId: Int, val useOriginalColors: Boolean = false) {
-    Settings(R.drawable.settings_vector),
-}
 
 /** Note: icons from [androidx.compose.material.icons.Icons] are [ImageVector]s */
 val MaterialIcons = ComposeMaterialIcons.Default
 /** To handle deprecated icons with the introduction of AutoMirrored */
 val MaterialIconsExt = ComposeMaterialIcons.AutoMirrored.Default
+
+val IconMediumSize = 36.dp
+val PaddingAroundIcon = 10.dp
+val IconSmallSize = 25.dp
+
+/** Useful when using [MaterialIcons], which are [ImageVector]s. An alternative to [IconButton] */
+@Composable
+fun EzIcon(
+    icon: ImageVector,
+    size: Dp = IconMediumSize,
+    padding: Dp = PaddingAroundIcon,
+    onClick: () -> Unit
+) = Icon(
+    imageVector = icon,
+    contentDescription = icon.name,
+    Modifier
+        .padding(padding)
+        .size(size)
+        .clickable {
+            onClick()
+        },
+    tint = Color.White
+)

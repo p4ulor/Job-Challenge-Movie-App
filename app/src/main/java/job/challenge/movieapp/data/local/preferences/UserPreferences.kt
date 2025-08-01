@@ -15,7 +15,7 @@ data class UserPreferences(
 ) {
     companion object {
         // Don't put this inside an object like the other things, or these will be null
-        val tmdbTokenKey = stringPreferencesKey("tmdbToken")
+        private val tmdbTokenKey = stringPreferencesKey("tmdbToken")
 
         suspend fun getFrom(storage: DataStore<Preferences>) = withContext(Dispatchers.IO) {
             return@withContext storage.data
