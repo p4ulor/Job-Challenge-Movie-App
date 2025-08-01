@@ -1,6 +1,7 @@
 package job.challenge.movieapp.data.repositories
 
 import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.call.body
 import job.challenge.movieapp.data.client.KtorHttpClient
 import job.challenge.movieapp.data.client.handle
@@ -14,7 +15,7 @@ import kotlin.jvm.Throws
 
 /** Repository for The Movie DB API1 */
 class TheMovieDbRepository @Inject constructor(
-    private val ctx: Context // IMO, this is the cleanest way to pass the token to Ktor
+    @ApplicationContext private val ctx: Context // IMO, this is the cleanest way to pass the token to Ktor
 ) : MoviesRepository {
     private val http = KtorHttpClient(TheMovieDbApiEndpoints.HOSTNAME)
 

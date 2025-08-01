@@ -9,7 +9,7 @@ import javax.inject.Inject
  * Use cases are used in ViewModels. They handle exceptions from the repository and bridge
  * the gap between the (UI) domain later and the (raw) data layer coming from the repositories
  */
-class GetMovieListUseCase @Inject constructor(
+class MovieListUseCase @Inject constructor(
     private val moviesRepository: MoviesRepository
 ) {
     suspend fun getNowPlaying(): MovieList? {

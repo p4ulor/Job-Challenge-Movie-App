@@ -76,7 +76,7 @@ dependencies {
     // Navigation
     implementation(libs.androidx.navigation.compose)
 
-    // Extendded Icons
+    // Extended Icons
     implementation(libs.androidx.material.icons.extended.android)
 
     // Datastore, to store app settings (the bearer token)

@@ -9,6 +9,8 @@ import dagger.hilt.components.SingletonComponent
 import job.challenge.movieapp.android.utils.NetworkObserver
 import job.challenge.movieapp.data.repositories.MoviesRepository
 import job.challenge.movieapp.data.repositories.TheMovieDbRepository
+import job.challenge.movieapp.data.usecases.MovieListUseCase
+import job.challenge.movieapp.data.usecases.MoviesDetailsUseCase
 import javax.inject.Singleton
 
 /**
@@ -23,6 +25,14 @@ object DependencyInjection {
     fun theMovieDbRepository(@ApplicationContext ctx: Context) : MoviesRepository {
         return TheMovieDbRepository(ctx)
     }
+
+    @Provides
+    @Singleton
+    fun moviesListUseCase(repo: TheMovieDbRepository) = MovieListUseCase(repo)
+
+    @Provides
+    @Singleton
+    fun movieDetailsUseCase(repo: TheMovieDbRepository) = MoviesDetailsUseCase(repo)
 
     @Provides
     @Singleton
