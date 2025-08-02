@@ -11,15 +11,15 @@ import job.challenge.movieapp.ui.theme.PreviewComposable
 
 
 @Composable
-fun MovieListScreenUiNotGranted(hasConnection: Boolean, isUserAuthenticated: Boolean) {
+fun MovieListScreenUiNotGranted(hasConnection: Boolean?, isUserAuthenticated: Boolean?) {
     CenteredColumn {
-        if (!hasConnection) {
+        if (hasConnection == false) {
             EzText(
                 R.string.no_internet_connection,
                 textStyle = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center
             )
-        } else if (!isUserAuthenticated) {
+        } else if (isUserAuthenticated == false) {
             EzText(
                 R.string.user_not_authenticated,
                 textStyle = MaterialTheme.typography.headlineMedium,

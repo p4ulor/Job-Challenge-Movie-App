@@ -68,16 +68,7 @@ fun RootScreen() = Surface {
 
     val navigateTo: (Screen) -> Unit = {
         currentScreen = it
-        navController.navigate(currentScreen.name)
-    }
-
-    val withDrawer: @Composable (screen: @Composable () -> Unit) -> Unit =  { screen ->
-        ScreenWithDrawer(drawerState, drawerItems, currentScreen,
-            onNewScreenSelected = { screen ->
-                navigateTo(screen)
-            },
-            screen = screen
-        )
+        navController.navigate(currentScreen.path)
     }
 
     Scaffold(
@@ -113,30 +104,44 @@ fun RootScreen() = Surface {
         }
     ) {
         Surface(Modifier.padding(it)) { // Important so that NavHost can make the screens automatically take in consideration the top bar
-            NavHost(
-                navController,
-                startDestination = Route.HOME.screen.name,
-                enterTransition = { EnterTransition.None }, // Improves performance, leave animations to the screens not the NavHost. Only they know when they are ready to display content
-                exitTransition = { ExitTransition.None } // Same reason as above
-            ) {
-                composable(Route.MovieList.path) { withDrawer { MovieListScreen(navController) } }
-                composable(Route.MovieDetails.path, Route.MovieDetails.navArgs) {backStackEntry ->
-                    val movieId = backStackEntry.arguments?.getInt(NavArgs.Path.selectedMovie)
-                    withDrawer { MovieDetailsScreen(movieId) }
-                }
-                composable(Route.AccountSettings.path) { withDrawer { SettingsScreen() } }
-            }
+            ScreenWithDrawer(drawerState, drawerItems, currentScreen,
+                onNewScreenSelected = { screen ->
+                    navigateTo(screen)
+                },
+                screen = {
+                    NavHost(
+                        navController,
+                        startDestination = Route.HOME.screen.name,
+                        enterTransition = { EnterTransition.None }, // Improves performance, leave animations to the screens not the NavHost. Only they know when they are ready to display content
+                        exitTransition = { ExitTransition.None } // Same reason as above
+                    ) {
+                        composable(Route.MovieList.path) {
+                            MovieListScreen(
+                                onNavToMovie = { movieId ->
+                                    currentScreen = Screen.MovieDetails
+                                    navController.navigate("${Screen.MovieDetails.path}/$movieId")
+                                }
+                            )
+                        }
+                        composable(Route.MovieDetails.path, Route.MovieDetails.navArgs) {backStackEntry ->
+                            val movieId = backStackEntry.arguments?.getInt(NavArgs.Path.selectedMovie)
+                            MovieDetailsScreen(movieId)
+                        }
+                        composable(Route.AccountSettings.path) { SettingsScreen() }
+                    }
 
-            BackHandler { // This is after NavHost so it's BackHandler is overridden by this
-                with(navController.currentRoute) {
-                    if (this == Route.HOME.screen.name) {
-                        ctx.getActivity()?.moveTaskToBack(true) // minimize app, instead of the default of destroying activity
-                    } else {
-                        navController.popBackStack()
-                        //navigateTo(Screen.from(navController.previousRoute))
+                    BackHandler { // This is after NavHost so it's BackHandler is overridden by this
+                        with(navController.currentRoute) {
+                            if (this == Route.HOME.screen.path) {
+                                ctx.getActivity()?.moveTaskToBack(true) // minimize app, instead of the default of destroying activity
+                            } else {
+                                navController.popBackStack()
+                                currentScreen = Screen.from(navController.currentRoute) ?: Route.HOME.screen
+                            }
+                        }
                     }
                 }
-            }
+            )
         }
     }
 }
@@ -158,7 +163,7 @@ fun ScreenWithDrawer(
                     Spacer(Modifier.height(12.dp))
                     drawerItems.forEach { item ->
                         NavigationDrawerItem(
-                            label = { Text(item.name.substringAfterLast(".")) },
+                            label = { EzText(item.title) },
                             selected = item.name == currentScreen?.name,
                             onClick = {
                                 scope.launch { drawerState.close() }

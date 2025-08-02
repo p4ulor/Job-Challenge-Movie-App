@@ -8,17 +8,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.automirrored.filled.ArrowLeft
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.automirrored.filled.ArrowLeft
-import androidx.compose.material.icons.automirrored.filled.ArrowRight
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -28,32 +28,34 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import job.challenge.movieapp.android.viewmodels.MovieListViewModel
-import job.challenge.movieapp.ui.components.util.CenteredColumn
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import job.challenge.movieapp.R
+import job.challenge.movieapp.android.viewmodels.MovieListViewModel
 import job.challenge.movieapp.android.viewmodels.utils.State
-import job.challenge.movieapp.data.domain.MovieList
 import job.challenge.movieapp.data.domain.Movie
+import job.challenge.movieapp.data.domain.MovieList
+import job.challenge.movieapp.ui.animations.ScaleIn
 import job.challenge.movieapp.ui.components.EzText
 import job.challenge.movieapp.ui.components.LoadingSpinner
 import job.challenge.movieapp.ui.components.MaterialIconsExt
+import job.challenge.movieapp.ui.components.ScreenUiNonSuccessCommon
+import job.challenge.movieapp.ui.components.util.CenteredColumn
 import job.challenge.movieapp.ui.components.util.CenteredRow
 import job.challenge.movieapp.ui.components.util.LargePadding
 import job.challenge.movieapp.ui.components.util.MediumPadding
 import job.challenge.movieapp.ui.components.util.SmallMediumPadding
 import job.challenge.movieapp.ui.components.util.SmallPadding
-import job.challenge.movieapp.ui.screens.root.Screen
+import job.challenge.movieapp.ui.screens.movie.details.MovieDetailsScreenUi
 import job.challenge.movieapp.ui.theme.PreviewComposable
+import kotlinx.coroutines.delay
 
 @Composable
 fun MovieListScreen(
-    navController: NavHostController,
+    onNavToMovie: (Int) -> Unit,
     vm: MovieListViewModel = hiltViewModel()
 ) {
-    val hasConnection by vm.networkObserver.hasConnection.collectAsState(initial = false)
-    val isUserAuthenticated by vm.isUserAuthenticated.collectAsState()
+    val hasConnection by vm.networkObserver.hasConnection.collectAsState(initial = null)
+    val isUserAuthenticated by vm.isUserAuthenticated.collectAsState(initial = null)
     val moviesList by vm.movieList.collectAsState()
     var isScreenGranted by rememberSaveable { mutableStateOf(false) }
 
@@ -62,16 +64,19 @@ fun MovieListScreen(
     }
 
     LaunchedEffect (hasConnection, isUserAuthenticated) {
-        isScreenGranted = hasConnection && isUserAuthenticated
+        isScreenGranted = hasConnection == true && isUserAuthenticated == true
     }
 
     if (isScreenGranted) {
-        MovieListScreenUi(moviesList, onNewPage = {
-            vm.getNowPlaying(page = it)
-        },
-        onNavToMovie = { movieId ->
-            navController.navigate("${Screen.MovieDetails.path}/$movieId")
-        })
+        (moviesList as? State.Success)?.let { movieListSuccess ->
+            MovieListScreenUi(
+                movieListSuccess,
+                onNewPage = {
+                    vm.getNowPlaying(page = it)
+                },
+                onNavToMovie = onNavToMovie
+            )
+        } ?: ScreenUiNonSuccessCommon(moviesList)
     } else {
         MovieListScreenUiNotGranted(hasConnection, isUserAuthenticated)
     }
@@ -84,86 +89,68 @@ private const val MAX_MOVIES_PER_ROW = 2
  * [onNavToMovie] callback that should receive the [Movie.id]
  */
 @Composable
-fun MovieListScreenUi(moviesList: State<MovieList>, onNewPage: (Int) -> Unit, onNavToMovie: (Int) -> Unit) {
-    when (moviesList) {
-        is State.Loading -> {
-            LoadingSpinner()
-        }
+fun MovieListScreenUi(moviesList: State.Success<MovieList>, onNewPage: (Int) -> Unit, onNavToMovie: (Int) -> Unit) {
+    var isScreenLoaded by rememberSaveable { mutableStateOf(false) }
 
-        is State.Success -> {
-            CenteredColumn {
-                Column(
-                    Modifier.fillMaxWidth().weight(1f),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally
+    LaunchedEffect(Unit) {
+        delay(50) // Just enough to make the animation appear
+        isScreenLoaded = true
+    }
+
+    ScaleIn(isScreenLoaded) {
+        CenteredColumn {
+            Column(
+                Modifier.fillMaxWidth().weight(1f),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                LazyColumn( // Not using LazyVerticalGrid with columns = GridCells.Fixed(2) because it doesn't allow centering the columns vertically
+                    contentPadding = PaddingValues(SmallMediumPadding),
+                    verticalArrangement = Arrangement.spacedBy(
+                        MediumPadding,
+                        Alignment.CenterVertically
+                    ),
                 ) {
-                    LazyColumn( // Not using LazyVerticalGrid with columns = GridCells.Fixed(2) because it doesn't allow centering the columns vertically
-                        contentPadding = PaddingValues(SmallMediumPadding),
-                        verticalArrangement = Arrangement.spacedBy(
-                            MediumPadding,
-                            Alignment.CenterVertically
-                        ),
-                    ) {
-                        items(moviesList.value.results.chunked(MAX_MOVIES_PER_ROW)) { moviePair ->
-                            CenteredRow {
-                                moviePair.first().let {
-                                    MovieListItem(it, Modifier.clickable {
-                                        onNavToMovie(it.id)
-                                    })
-                                }
-
-                                moviePair.getOrNull(1)?.let { secondMovie ->
-                                    MovieListItem(secondMovie, Modifier.clickable {
-                                        onNavToMovie(secondMovie.id)
-                                    })
-                                } ?: MovieListItem(moviePair.first(), Modifier.alpha(0f)) // So that if the list is odd, the last item doesn't occupy the whole row width
+                    items(moviesList.value.results.chunked(MAX_MOVIES_PER_ROW)) { moviePair ->
+                        CenteredRow {
+                            moviePair.first().let {
+                                MovieListItem(it, Modifier.clickable {
+                                    onNavToMovie(it.id)
+                                })
                             }
-                        }
-                    }
-                }
 
-                CenteredRow(Modifier.padding(bottom = SmallMediumPadding)) {
-                    Button(onClick = {
-                        onNewPage(moviesList.value.page - 1)
-                    },
-                        enabled = moviesList.value.hasPrev()
-                    ) {
-                        MaterialIconsExt.ArrowLeft.apply {
-                            Icon(this, this.name)
-                        }
-                    }
-
-                    Text((moviesList.value.page).toString(), Modifier.padding(horizontal = SmallPadding), fontWeight = FontWeight.Bold)
-
-                    Button(onClick = {
-                        onNewPage(moviesList.value.page + 1)
-                    },
-                        enabled = moviesList.value.hasNext()
-                    ) {
-                        MaterialIconsExt.ArrowRight.apply {
-                            Icon(this, this.name)
+                            moviePair.getOrNull(1)?.let { secondMovie ->
+                                MovieListItem(secondMovie, Modifier.clickable {
+                                    onNavToMovie(secondMovie.id)
+                                })
+                            } ?: MovieListItem(moviePair.first(), Modifier.alpha(0f)) // So that if the list is odd, the last item doesn't occupy the whole row width
                         }
                     }
                 }
             }
-        }
 
-        is State.Error -> {
-            CenteredColumn(Modifier.fillMaxSize().padding(LargePadding)) {
-                Text(
-                    moviesList.message,
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
+            CenteredRow(Modifier.padding(bottom = SmallMediumPadding)) {
+                Button(onClick = {
+                    onNewPage(moviesList.value.page - 1)
+                },
+                    enabled = moviesList.value.hasPrev()
+                ) {
+                    MaterialIconsExt.ArrowLeft.apply {
+                        Icon(this, this.name)
+                    }
+                }
 
-        else -> { // Should not occur
-            CenteredColumn(Modifier.fillMaxSize().padding(LargePadding)) {
-                EzText(
-                    R.string.a_highly_unexpected_error_occued,
-                    textStyle = MaterialTheme.typography.titleMedium,
-                )
+                Text((moviesList.value.page).toString(), Modifier.padding(horizontal = SmallPadding), fontWeight = FontWeight.Bold)
+
+                Button(onClick = {
+                    onNewPage(moviesList.value.page + 1)
+                },
+                    enabled = moviesList.value.hasNext()
+                ) {
+                    MaterialIconsExt.ArrowRight.apply {
+                        Icon(this, this.name)
+                    }
+                }
             }
         }
     }
@@ -213,18 +200,4 @@ fun MovieListScreenUiPreview() = PreviewComposable {
         totalPages = 2
     )
     MovieListScreenUi(State.Success(movies), {}, {})
-}
-
-@Preview
-@Composable
-fun MovieListScreenUiLoadingPreview() = PreviewComposable {
-    MovieListScreenUi(State.Loading, {}, {})
-}
-
-@Preview
-@Composable
-fun MovieListScreenUiErrorPreview() = PreviewComposable {
-    MovieListScreenUi(
-        State.Error("HTTP Error: Invalid API key: You must be granted a valid key."), {}, {}
-    )
 }

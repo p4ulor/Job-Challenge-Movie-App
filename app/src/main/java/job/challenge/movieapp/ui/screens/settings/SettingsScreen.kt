@@ -17,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,6 +32,7 @@ import job.challenge.movieapp.R
 import job.challenge.movieapp.android.viewmodels.SettingsViewModel
 import job.challenge.movieapp.data.local.preferences.UserPreferences
 import job.challenge.movieapp.i
+import job.challenge.movieapp.ui.animations.ScaleIn
 import job.challenge.movieapp.ui.components.EzIcon
 import job.challenge.movieapp.ui.components.EzText
 import job.challenge.movieapp.ui.components.IconSmallSize
@@ -46,20 +48,24 @@ fun SettingsScreen(
     vm: SettingsViewModel = hiltViewModel()
 ) {
     val prefs by vm.prefs.collectAsState()
+    var isScreenLoaded by rememberSaveable { mutableStateOf(false) }
     
     LaunchedEffect(Unit) {
         vm.loadUserPrefs()
+        isScreenLoaded = true
     }
 
-    if (prefs == null) {
-        LoadingSpinner()
-    } else {
-        SettingsScreenUi(
-            storedToken = prefs?.tmdbToken,
-            onSetBearerToken = {
-                vm.saveUserPrefs(UserPreferences(it))
-            }
-        )
+    ScaleIn(isScreenLoaded) {
+        if (prefs == null) {
+            LoadingSpinner()
+        } else {
+            SettingsScreenUi(
+                storedToken = prefs?.tmdbToken,
+                onSetBearerToken = {
+                    vm.saveUserPrefs(UserPreferences(it))
+                }
+            )
+        }
     }
 }
 

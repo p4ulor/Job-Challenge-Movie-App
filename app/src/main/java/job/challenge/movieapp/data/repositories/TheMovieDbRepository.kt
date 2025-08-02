@@ -13,7 +13,6 @@ import job.challenge.movieapp.data.local.preferences.UserPreferences
 import job.challenge.movieapp.data.local.preferences.dataStore
 import job.challenge.movieapp.e
 import javax.inject.Inject
-import kotlin.jvm.Throws
 
 /** Repository for The Movie DB API1 */
 class TheMovieDbRepository @Inject constructor(

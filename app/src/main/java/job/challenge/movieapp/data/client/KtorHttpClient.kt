@@ -14,7 +14,6 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
-import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
@@ -22,7 +21,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
-import io.ktor.http.headers
 import io.ktor.http.isSuccess
 import io.ktor.http.path
 import io.ktor.serialization.kotlinx.json.json
@@ -30,8 +28,6 @@ import io.ktor.util.toMap
 import job.challenge.movieapp.data.repositories.TheMovieDbApiEndpoints.Companion.defaultHeaders
 import job.challenge.movieapp.e
 import job.challenge.movieapp.i
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.sync.Mutex
 import kotlinx.serialization.json.Json
 import java.io.Closeable
 

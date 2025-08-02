@@ -19,7 +19,7 @@ class MovieDetailsUseCase @Inject constructor(
     private val moviesRepository: MoviesRepository
 ) {
 
-    private val _movie = MutableStateFlow<State<Movie>>(State.None)
+    private val _movie = MutableStateFlow<State<Movie>>(State.Loading)
     val movie = _movie.asStateFlow()
 
     suspend fun getMovieById(id: Int) {

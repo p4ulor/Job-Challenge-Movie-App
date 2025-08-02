@@ -12,4 +12,5 @@
     <string name="movie_details">Movie Details</string>
     <string name="account_settings">Account Settings</string>
     <string name="languages">Languages</string>
+    <string name="this_screen_should_not_be_called_on_success">This screen should not have been called on success state</string>
 </resources>

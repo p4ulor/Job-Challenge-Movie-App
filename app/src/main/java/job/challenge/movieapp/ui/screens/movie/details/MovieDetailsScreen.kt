@@ -17,6 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
@@ -32,12 +35,14 @@ import job.challenge.movieapp.android.viewmodels.MovieDetailsViewModel
 import job.challenge.movieapp.android.viewmodels.utils.State
 import job.challenge.movieapp.data.domain.Movie
 import job.challenge.movieapp.data.utils.trimToDecimals
+import job.challenge.movieapp.ui.animations.ScaleIn
 import job.challenge.movieapp.ui.components.BIG_POSTER_HEIGHT
 import job.challenge.movieapp.ui.components.CoilImage
 import job.challenge.movieapp.ui.components.EzText
 import job.challenge.movieapp.ui.components.LoadingSpinner
 import job.challenge.movieapp.ui.components.MaterialIcons
 import job.challenge.movieapp.ui.components.MaterialIconsExt
+import job.challenge.movieapp.ui.components.ScreenUiNonSuccessCommon
 import job.challenge.movieapp.ui.components.util.CenteredColumn
 import job.challenge.movieapp.ui.components.util.CenteredRow
 import job.challenge.movieapp.ui.components.util.LargePadding
@@ -45,6 +50,7 @@ import job.challenge.movieapp.ui.components.util.MediumPadding
 import job.challenge.movieapp.ui.components.util.RoundRectangleShape
 import job.challenge.movieapp.ui.components.util.SmoothHorizontalDivider
 import job.challenge.movieapp.ui.theme.PreviewComposable
+import kotlinx.coroutines.delay
 
 @Composable
 fun MovieDetailsScreen(
@@ -59,130 +65,114 @@ fun MovieDetailsScreen(
         }
     }
 
-    MovieDetailsScreenUi(movie)
+    (movie as? State.Success)?.let {
+        MovieDetailsScreenUi(it)
+    } ?: ScreenUiNonSuccessCommon(movie)
 }
 
 @Composable
-fun MovieDetailsScreenUi(movie: State<Movie>){
-    when (movie) {
-        is State.Loading -> {
-            LoadingSpinner()
-        }
+fun MovieDetailsScreenUi(movie: State.Success<Movie>){
+    var isScreenLoaded by rememberSaveable { mutableStateOf(false) }
 
-        is State.Success -> {
-            CenteredColumn(
-                Modifier
-                    .fillMaxSize()
-                    .padding(MediumPadding)
-                    .verticalScroll(rememberScrollState())
-            ) {
+    LaunchedEffect(Unit) {
+        delay(50) // Just enough to make the animation appear
+        isScreenLoaded = true
+    }
+
+    ScaleIn(isScreenLoaded) {
+        CenteredColumn(
+            Modifier
+                .fillMaxSize()
+                .padding(MediumPadding)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Text(
+                movie.value.title,
+                fontWeight = FontWeight.Bold,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineLarge
+            )
+            Text(
+                movie.value.originalTitle,
+                Modifier.alpha(0.7f),
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelMedium
+            )
+
+            CoilImage(
+                movie.value.backdropPathUrl,
+                BIG_POSTER_HEIGHT,
+                Modifier.fillMaxWidth()
+            )
+
+            Surface (
+                Modifier.border(1.dp, MaterialTheme.colorScheme.outline, RoundRectangleShape),
+                color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+            ){
                 Text(
-                    movie.value.title,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.headlineLarge
-                )
-                Text(
-                    movie.value.originalTitle,
-                    Modifier.alpha(0.7f),
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.labelMedium
-                )
-
-                CoilImage(
-                    movie.value.backdropPathUrl,
-                    BIG_POSTER_HEIGHT,
-                    Modifier.fillMaxWidth()
-                )
-
-                Surface (
-                    Modifier.border(1.dp, MaterialTheme.colorScheme.outline, RoundRectangleShape),
-                    color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
-                ){
-                    Text(
-                        "${movie.value.overview}",
-                        Modifier.padding(MediumPadding),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-
-                CenteredRow {
-                    MaterialIcons.CalendarMonth.apply {
-                        Icon(this, this.name)
-                    }
-                    Text(
-                        "${movie.value.releaseDate}",
-                        style = MaterialTheme.typography.labelSmall,
-                    )
-                }
-
-                CenteredRow {
-                    Icon(
-                        painter = painterResource(R.drawable.person_raised_hand_google_fonts),
-                        contentDescription = "vote count",
-                    )
-                    Text(
-                        "${movie.value.voteCount}",
-                        style = MaterialTheme.typography.labelSmall,
-                        maxLines = 1
-                    )
-
-                    MaterialIcons.Reviews.apply {
-                        Icon(this, this.name)
-                    }
-                    Text(
-                        "${movie.value.voteAverage.trimToDecimals(2)}",
-                        style = MaterialTheme.typography.labelSmall,
-                        maxLines = 1
-                    )
-
-                    MaterialIconsExt.TrendingUp.apply {
-                        Icon(this, this.name)
-                    }
-                    Text(
-                        "${movie.value.popularity.trimToDecimals(2)}",
-                        style = MaterialTheme.typography.labelSmall,
-                        maxLines = 1
-                    )
-                }
-
-                CenteredRow {
-                    Text(
-                        "${stringResource(R.string.languages)}:",
-                        style = MaterialTheme.typography.labelSmall,
-                        maxLines = 1
-                    )
-                    Text(
-                        "${movie.value.spokenLanguages.joinToString()}",
-                        style = MaterialTheme.typography.labelSmall,
-                    )
-                }
-
-                SmoothHorizontalDivider(modifier = Modifier.padding(vertical = MediumPadding))
-            }
-        }
-
-        is State.Error -> {
-            CenteredColumn(Modifier.fillMaxSize().padding(LargePadding)) {
-                Text(
-                    movie.message,
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center
+                    "${movie.value.overview}",
+                    Modifier.padding(MediumPadding),
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
-        }
 
-        else -> { // Should not occur
-            CenteredColumn(Modifier.fillMaxSize().padding(LargePadding)) {
-                EzText(
-                    R.string.a_highly_unexpected_error_occued,
-                    textStyle = MaterialTheme.typography.titleMedium,
+            CenteredRow {
+                MaterialIcons.CalendarMonth.apply {
+                    Icon(this, this.name)
+                }
+                Text(
+                    "${movie.value.releaseDate}",
+                    style = MaterialTheme.typography.labelSmall,
                 )
             }
+
+            CenteredRow {
+                Icon(
+                    painter = painterResource(R.drawable.person_raised_hand_google_fonts),
+                    contentDescription = "vote count",
+                )
+                Text(
+                    "${movie.value.voteCount}",
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1
+                )
+
+                MaterialIcons.Reviews.apply {
+                    Icon(this, this.name)
+                }
+                Text(
+                    "${movie.value.voteAverage.trimToDecimals(2)}",
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1
+                )
+
+                MaterialIconsExt.TrendingUp.apply {
+                    Icon(this, this.name)
+                }
+                Text(
+                    "${movie.value.popularity.trimToDecimals(2)}",
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1
+                )
+            }
+
+            CenteredRow {
+                Text(
+                    "${stringResource(R.string.languages)}:",
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1
+                )
+                Text(
+                    "${movie.value.spokenLanguages.joinToString()}",
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
+
+            SmoothHorizontalDivider(modifier = Modifier.padding(vertical = MediumPadding))
         }
     }
 }

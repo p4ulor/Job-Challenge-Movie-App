@@ -7,12 +7,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import job.challenge.movieapp.android.utils.NetworkObserver
-import job.challenge.movieapp.android.viewmodels.MovieDetailsViewModel
-import job.challenge.movieapp.android.viewmodels.MovieListViewModel
 import job.challenge.movieapp.data.repositories.MoviesRepository
 import job.challenge.movieapp.data.repositories.TheMovieDbRepository
-import job.challenge.movieapp.data.usecases.MovieListUseCase
 import job.challenge.movieapp.data.usecases.MovieDetailsUseCase
+import job.challenge.movieapp.data.usecases.MovieListUseCase
 import javax.inject.Singleton
 
 /**

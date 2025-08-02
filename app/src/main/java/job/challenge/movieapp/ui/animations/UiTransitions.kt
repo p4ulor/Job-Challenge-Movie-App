@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.runtime.Composable
 
@@ -11,7 +12,7 @@ import androidx.compose.runtime.Composable
 fun ScaleIn(isLoaded: Boolean, content: @Composable AnimatedVisibilityScope.() -> Unit){
     AnimatedVisibility(
         visible = isLoaded,
-        enter = fadeIn(smooth()) + scaleIn(),
+        enter = fadeIn(smooth(100)) + scaleIn(smooth(200)),
         exit = ExitTransition.None // improves performance when navigating
     ) {
         content()

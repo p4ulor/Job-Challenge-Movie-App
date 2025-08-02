@@ -2,7 +2,6 @@ package job.challenge.movieapp.data.usecases
 
 import android.content.Context
 import job.challenge.movieapp.android.viewmodels.utils.State
-import job.challenge.movieapp.android.viewmodels.utils.launch
 import job.challenge.movieapp.data.domain.MovieList
 import job.challenge.movieapp.data.domain.PresetException
 import job.challenge.movieapp.data.local.preferences.UserPreferences
@@ -27,7 +26,7 @@ class MovieListUseCase @Inject constructor(
     private val _isUserAuthenticated = MutableStateFlow(false)
     val isUserAuthenticated = _isUserAuthenticated.asStateFlow()
 
-    private val _movieList = MutableStateFlow<State<MovieList>>(State.None)
+    private val _movieList = MutableStateFlow<State<MovieList>>(State.Loading)
     val movieList = _movieList.asStateFlow()
 
     suspend fun loadUserPrefs(ctx: Context){

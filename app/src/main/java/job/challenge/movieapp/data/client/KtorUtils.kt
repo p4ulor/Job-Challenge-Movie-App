@@ -4,7 +4,6 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Headers
 import io.ktor.http.HeadersBuilder
 import io.ktor.http.isSuccess
-import kotlin.enums.EnumEntries
 
 /**
  * [R] a type of a [HttpResponse]

@@ -3,7 +3,6 @@ package job.challenge.movieapp.ui.screens.movie.list
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Reviews
 import androidx.compose.material3.Icon
@@ -23,7 +22,6 @@ import job.challenge.movieapp.data.domain.MovieList
 import job.challenge.movieapp.data.utils.trimToDecimals
 import job.challenge.movieapp.ui.components.CoilImage
 import job.challenge.movieapp.ui.components.MaterialIcons
-import job.challenge.movieapp.ui.components.MaterialIconsExt
 import job.challenge.movieapp.ui.components.SMALL_POSTER_HEIGHT
 import job.challenge.movieapp.ui.components.util.CenteredColumn
 import job.challenge.movieapp.ui.components.util.CenteredRow

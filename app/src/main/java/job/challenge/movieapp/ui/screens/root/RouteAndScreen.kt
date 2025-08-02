@@ -53,6 +53,6 @@ enum class Screen (@StringRes val title: Int, val icon: ImageVector? = null) {
     val path = this.name.lowercase(Locale.getDefault())
 
     companion object {
-        fun from(string: String?) = Screen.entries.first { it.name == string }
+        fun from(string: String?) = Screen.entries.firstOrNull { it.name == string }
     }
 }

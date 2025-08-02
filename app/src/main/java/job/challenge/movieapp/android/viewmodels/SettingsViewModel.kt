@@ -4,15 +4,11 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import job.challenge.movieapp.android.utils.NetworkObserver
 import job.challenge.movieapp.android.viewmodels.utils.launch
-import job.challenge.movieapp.data.domain.MovieList
 import job.challenge.movieapp.data.local.preferences.UserPreferences
 import job.challenge.movieapp.data.local.preferences.dataStore
-import job.challenge.movieapp.data.usecases.MovieListUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
