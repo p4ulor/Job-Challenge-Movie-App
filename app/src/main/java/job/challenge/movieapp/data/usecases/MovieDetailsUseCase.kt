@@ -6,6 +6,8 @@ import job.challenge.movieapp.data.domain.PresetException
 import job.challenge.movieapp.data.repositories.MoviesRepository
 import job.challenge.movieapp.data.repositories.TheMovieDbApiEndpoints
 import job.challenge.movieapp.e
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.util.Locale
 import javax.inject.Inject
 
@@ -16,14 +18,23 @@ import javax.inject.Inject
 class MovieDetailsUseCase @Inject constructor(
     private val moviesRepository: MoviesRepository
 ) {
-    suspend fun getMovieById(id: Int): State<Movie> {
-        return try {
+
+    private val _movie = MutableStateFlow<State<Movie>>(State.None)
+    val movie = _movie.asStateFlow()
+
+    suspend fun getMovieById(id: Int) {
+        if (id == (movie.value as? State.Success )?.value?.id) {
+            return // to avoid unnecessary calls, when changing screens
+        }
+
+        _movie.value = try {
+            _movie.value = State.Loading
             moviesRepository.getMovieById(id).let {
                 Movie(
                     it.id,
                     title = it.title,
                     originalTitle = it.original_title,
-                    backdropPathUrl = it.belongs_to_collection.backdrop_path.let { pathSegment ->
+                    backdropPathUrl = it.backdrop_path.let { pathSegment ->
                         TheMovieDbApiEndpoints.Resources.Picture.Width500(pathSegment).path
                     },
                     overview = it.overview,

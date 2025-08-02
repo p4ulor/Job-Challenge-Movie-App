@@ -39,12 +39,4 @@ object DependencyInjection {
     @Provides
     @Singleton
     fun networkObserver(@ApplicationContext ctx: Context) = NetworkObserver(ctx)
-
-/*    @Provides
-    @Singleton
-    fun movieListViewModel(
-        @ApplicationContext ctx: Context,
-        movieListUseCase: MovieListUseCase,
-        networkObserver: NetworkObserver
-    ) = MovieListViewModel(ctx, movieListUseCase, networkObserver)*/
 }

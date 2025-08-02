@@ -19,17 +19,15 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieDetailsViewModel @Inject constructor(
     @ApplicationContext private val ctx: Context,
-    private val movieListUseCase: MovieDetailsUseCase,
+    private val movieDetailsUseCase: MovieDetailsUseCase,
     val networkObserver: NetworkObserver,
 ) : ViewModel() {
 
-    private val _movie = MutableStateFlow<State<Movie>>(State.None)
-    val movie = _movie.asStateFlow()
+    val movie = movieDetailsUseCase.movie
 
     fun getMovieById(id: Int) {
         launch {
-            _movie.value = State.Loading
-            //_movie.value = movieListUseCase.getMovieById()
+            movieDetailsUseCase.getMovieById(id)
         }
     }
 }

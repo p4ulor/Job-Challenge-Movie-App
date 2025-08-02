@@ -49,7 +49,7 @@ data class MovieResponse(
     val id: Int,
     val title: String,
     val original_title: String,
-    val belongs_to_collection: Collection,
+    val backdrop_path: String, // we can use it like https://image.tmdb.org/t/p/w500{backdrop_path}. Example: https://image.tmdb.org/t/p/w1280/8J6UlIFcU7eZfq9iCLbgc8Auklg.jpg
     val overview: String,
     val release_date: String,
     val vote_average: Float,
@@ -58,13 +58,6 @@ data class MovieResponse(
     val popularity: Float,
     val spoken_languages: List<SpokenLanguage>
 ){
-    @Serializable
-    data class Collection(
-        val id: Int,
-        val name: String,
-        val poster_path: String,
-        val backdrop_path: String // we can use it like https://image.tmdb.org/t/p/w500{backdrop_path}. Example: https://image.tmdb.org/t/p/w1280/8J6UlIFcU7eZfq9iCLbgc8Auklg.jpg
-    )
 
     @Serializable
     data class SpokenLanguage(

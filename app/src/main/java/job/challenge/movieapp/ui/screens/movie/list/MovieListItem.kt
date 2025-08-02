@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Reviews
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -65,7 +66,7 @@ fun RowScope.MovieListItem(item: MovieList.MovieListItem, modifier: Modifier = M
                     "${item.releaseDate}",
                     style = MaterialTheme.typography.labelSmall,
                 )
-                MaterialIconsExt.TrendingUp.apply {
+                MaterialIcons.Reviews.apply {
                     Icon(this, this.name)
                 }
                 Text(

@@ -1,12 +1,11 @@
 package job.challenge.movieapp.ui.screens.movie.list
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
@@ -18,14 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.automirrored.filled.ArrowLeft
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
-import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
-import androidx.compose.material.icons.filled.ArrowRightAlt
 import androidx.compose.material3.Button
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,32 +28,34 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import job.challenge.movieapp.android.viewmodels.MovieListViewModel
 import job.challenge.movieapp.ui.components.util.CenteredColumn
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import job.challenge.movieapp.R
 import job.challenge.movieapp.android.viewmodels.utils.State
 import job.challenge.movieapp.data.domain.MovieList
+import job.challenge.movieapp.data.domain.Movie
 import job.challenge.movieapp.ui.components.EzText
 import job.challenge.movieapp.ui.components.LoadingSpinner
-import job.challenge.movieapp.ui.components.MaterialIcons
 import job.challenge.movieapp.ui.components.MaterialIconsExt
 import job.challenge.movieapp.ui.components.util.CenteredRow
 import job.challenge.movieapp.ui.components.util.LargePadding
 import job.challenge.movieapp.ui.components.util.MediumPadding
 import job.challenge.movieapp.ui.components.util.SmallMediumPadding
 import job.challenge.movieapp.ui.components.util.SmallPadding
+import job.challenge.movieapp.ui.screens.root.Screen
 import job.challenge.movieapp.ui.theme.PreviewComposable
 
 @Composable
 fun MovieListScreen(
+    navController: NavHostController,
     vm: MovieListViewModel = hiltViewModel()
 ) {
     val hasConnection by vm.networkObserver.hasConnection.collectAsState(initial = false)
     val isUserAuthenticated by vm.isUserAuthenticated.collectAsState()
     val moviesList by vm.movieList.collectAsState()
-    var isScreenGranted by remember { mutableStateOf(false) }
+    var isScreenGranted by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         vm.loadUserPrefs()
@@ -66,14 +63,14 @@ fun MovieListScreen(
 
     LaunchedEffect (hasConnection, isUserAuthenticated) {
         isScreenGranted = hasConnection && isUserAuthenticated
-        if (isScreenGranted) {
-            vm.getNowPlaying()
-        }
     }
 
     if (isScreenGranted) {
         MovieListScreenUi(moviesList, onNewPage = {
             vm.getNowPlaying(page = it)
+        },
+        onNavToMovie = { movieId ->
+            navController.navigate("${Screen.MovieDetails.path}/$movieId")
         })
     } else {
         MovieListScreenUiNotGranted(hasConnection, isUserAuthenticated)
@@ -82,8 +79,12 @@ fun MovieListScreen(
 
 private const val MAX_MOVIES_PER_ROW = 2
 
+/**
+ * [onNewPage] a callback that should receive the page number
+ * [onNavToMovie] callback that should receive the [Movie.id]
+ */
 @Composable
-fun MovieListScreenUi(moviesList: State<MovieList>, onNewPage: (Int) -> Unit) {
+fun MovieListScreenUi(moviesList: State<MovieList>, onNewPage: (Int) -> Unit, onNavToMovie: (Int) -> Unit) {
     when (moviesList) {
         is State.Loading -> {
             LoadingSpinner()
@@ -105,9 +106,16 @@ fun MovieListScreenUi(moviesList: State<MovieList>, onNewPage: (Int) -> Unit) {
                     ) {
                         items(moviesList.value.results.chunked(MAX_MOVIES_PER_ROW)) { moviePair ->
                             CenteredRow {
-                                MovieListItem(moviePair.first())
+                                moviePair.first().let {
+                                    MovieListItem(it, Modifier.clickable {
+                                        onNavToMovie(it.id)
+                                    })
+                                }
+
                                 moviePair.getOrNull(1)?.let { secondMovie ->
-                                    MovieListItem(secondMovie)
+                                    MovieListItem(secondMovie, Modifier.clickable {
+                                        onNavToMovie(secondMovie.id)
+                                    })
                                 } ?: MovieListItem(moviePair.first(), Modifier.alpha(0f)) // So that if the list is odd, the last item doesn't occupy the whole row width
                             }
                         }
@@ -204,19 +212,19 @@ fun MovieListScreenUiPreview() = PreviewComposable {
         page = 1,
         totalPages = 2
     )
-    MovieListScreenUi(State.Success(movies), {})
+    MovieListScreenUi(State.Success(movies), {}, {})
 }
 
 @Preview
 @Composable
 fun MovieListScreenUiLoadingPreview() = PreviewComposable {
-    MovieListScreenUi(State.Loading, {})
+    MovieListScreenUi(State.Loading, {}, {})
 }
 
 @Preview
 @Composable
 fun MovieListScreenUiErrorPreview() = PreviewComposable {
     MovieListScreenUi(
-        State.Error("HTTP Error: Invalid API key: You must be granted a valid key."), {}
+        State.Error("HTTP Error: Invalid API key: You must be granted a valid key."), {}, {}
     )
 }

@@ -44,14 +44,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import job.challenge.movieapp.R
 import job.challenge.movieapp.android.activities.utils.getActivity
 import job.challenge.movieapp.ui.components.EzText
 import job.challenge.movieapp.ui.components.MaterialIcons
 import job.challenge.movieapp.ui.components.MaterialIconsExt
 import job.challenge.movieapp.ui.components.util.CenteredRow
 import job.challenge.movieapp.ui.components.util.SystemNavigationBarHeight
-import job.challenge.movieapp.ui.screens.Screen
 import job.challenge.movieapp.ui.screens.movie.details.MovieDetailsScreen
 import job.challenge.movieapp.ui.screens.movie.list.MovieListScreen
 import job.challenge.movieapp.ui.screens.settings.SettingsScreen
@@ -114,25 +112,28 @@ fun RootScreen() = Surface {
             )
         }
     ) {
-        Surface(Modifier.padding(it)) {
+        Surface(Modifier.padding(it)) { // Important so that NavHost can make the screens automatically take in consideration the top bar
             NavHost(
                 navController,
-                startDestination = Screen.MovieList.name,
-                Modifier, // Important so that NavHost can make the screens automatically take in consideration the bottom bar
+                startDestination = Route.HOME.screen.name,
                 enterTransition = { EnterTransition.None }, // Improves performance, leave animations to the screens not the NavHost. Only they know when they are ready to display content
                 exitTransition = { ExitTransition.None } // Same reason as above
             ) {
-                composable(route = Screen.MovieList.name) { withDrawer { MovieListScreen() } }
-                composable(route = Screen.MovieDetails.name) { withDrawer { MovieDetailsScreen() } }
-                composable(route = Screen.AccountSettings.name) { withDrawer { SettingsScreen() } }
+                composable(Route.MovieList.path) { withDrawer { MovieListScreen(navController) } }
+                composable(Route.MovieDetails.path, Route.MovieDetails.navArgs) {backStackEntry ->
+                    val movieId = backStackEntry.arguments?.getInt(NavArgs.Path.selectedMovie)
+                    withDrawer { MovieDetailsScreen(movieId) }
+                }
+                composable(Route.AccountSettings.path) { withDrawer { SettingsScreen() } }
             }
 
-            BackHandler { // Should be placed after NavHost, so it's BackHandler is overridden by this
+            BackHandler { // This is after NavHost so it's BackHandler is overridden by this
                 with(navController.currentRoute) {
-                    if (this == Screen.HOME.name) {
+                    if (this == Route.HOME.screen.name) {
                         ctx.getActivity()?.moveTaskToBack(true) // minimize app, instead of the default of destroying activity
                     } else {
-                        navigateTo(Screen.from(navController.previousRoute))
+                        navController.popBackStack()
+                        //navigateTo(Screen.from(navController.previousRoute))
                     }
                 }
             }

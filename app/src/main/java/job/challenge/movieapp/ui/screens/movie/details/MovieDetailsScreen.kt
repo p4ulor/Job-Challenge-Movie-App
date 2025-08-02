@@ -48,12 +48,15 @@ import job.challenge.movieapp.ui.theme.PreviewComposable
 
 @Composable
 fun MovieDetailsScreen(
+    movieId: Int? = null,
     vm: MovieDetailsViewModel = hiltViewModel()
 ){
     val movie by vm.movie.collectAsState()
 
     LaunchedEffect(Unit) {
-        //vm.getMovieById()
+        movieId?.let {
+            vm.getMovieById(it)
+        }
     }
 
     MovieDetailsScreenUi(movie)
