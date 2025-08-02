@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,7 +12,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowLeft
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,26 +24,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import job.challenge.movieapp.R
 import job.challenge.movieapp.android.viewmodels.MovieListViewModel
 import job.challenge.movieapp.android.viewmodels.utils.State
 import job.challenge.movieapp.data.domain.Movie
 import job.challenge.movieapp.data.domain.MovieList
 import job.challenge.movieapp.ui.animations.ScaleIn
-import job.challenge.movieapp.ui.components.EzText
-import job.challenge.movieapp.ui.components.LoadingSpinner
 import job.challenge.movieapp.ui.components.MaterialIconsExt
 import job.challenge.movieapp.ui.components.ScreenUiNonSuccessCommon
 import job.challenge.movieapp.ui.components.util.CenteredColumn
 import job.challenge.movieapp.ui.components.util.CenteredRow
-import job.challenge.movieapp.ui.components.util.LargePadding
 import job.challenge.movieapp.ui.components.util.MediumPadding
 import job.challenge.movieapp.ui.components.util.SmallMediumPadding
 import job.challenge.movieapp.ui.components.util.SmallPadding
-import job.challenge.movieapp.ui.screens.movie.details.MovieDetailsScreenUi
 import job.challenge.movieapp.ui.theme.PreviewComposable
 import kotlinx.coroutines.delay
 

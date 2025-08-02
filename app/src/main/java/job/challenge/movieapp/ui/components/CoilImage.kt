@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -20,13 +21,14 @@ import coil3.size.Size
 import job.challenge.movieapp.R
 import job.challenge.movieapp.ui.components.util.MediumPadding
 import job.challenge.movieapp.ui.components.util.RoundRectangleShape
+import job.challenge.movieapp.ui.components.util.addIfTrue
 
 val SMALL_POSTER_HEIGHT = 126.dp
 
 val BIG_POSTER_HEIGHT = 380.dp
 
 @Composable
-fun CoilImage(url: String, height: Dp, modifier: Modifier = Modifier) {
+fun CoilImage(url: String, height: Dp, modifier: Modifier = Modifier, addBorder: Boolean = true) {
     val ctx = LocalContext.current
 
     AsyncImage(
@@ -41,7 +43,9 @@ fun CoilImage(url: String, height: Dp, modifier: Modifier = Modifier) {
             .padding(MediumPadding)
             .heightIn(max = height)
             .clip(RoundRectangleShape)
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundRectangleShape),
+            .addIfTrue(addBorder) {
+                Modifier.border(1.dp, MaterialTheme.colorScheme.outline, RoundRectangleShape)
+            },
         contentScale = ContentScale.Fit,
         error = painterResource(R.drawable.question_mark),
     )

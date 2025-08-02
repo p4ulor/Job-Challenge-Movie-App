@@ -41,3 +41,14 @@ fun CenteredRow(
         content()
     }
 }
+
+/** Util to only apply a [modifierOp] if [condition] is true, in order to reduce lines and improve readability */
+@Composable
+fun Modifier.addIfTrue(condition: Boolean, modifierOp: @Composable Modifier.() -> Modifier) =
+    then(
+        if (condition) {
+            this.modifierOp()
+        } else {
+            Modifier
+        }
+    )

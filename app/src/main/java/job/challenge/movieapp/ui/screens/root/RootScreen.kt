@@ -27,7 +27,6 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
@@ -125,7 +124,10 @@ fun RootScreen() = Surface {
                         }
                         composable(Route.MovieDetails.path, Route.MovieDetails.navArgs) {backStackEntry ->
                             val movieId = backStackEntry.arguments?.getInt(NavArgs.Path.selectedMovie)
-                            MovieDetailsScreen(movieId)
+                            MovieDetailsScreen(movieId, onNavToMovie = { newMovieId ->
+                                currentScreen = Screen.MovieDetails
+                                navController.navigate("${Screen.MovieDetails.path}/$newMovieId")
+                            })
                         }
                         composable(Route.AccountSettings.path) { SettingsScreen() }
                     }

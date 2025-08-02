@@ -39,13 +39,11 @@ import job.challenge.movieapp.ui.animations.ScaleIn
 import job.challenge.movieapp.ui.components.BIG_POSTER_HEIGHT
 import job.challenge.movieapp.ui.components.CoilImage
 import job.challenge.movieapp.ui.components.EzText
-import job.challenge.movieapp.ui.components.LoadingSpinner
 import job.challenge.movieapp.ui.components.MaterialIcons
 import job.challenge.movieapp.ui.components.MaterialIconsExt
 import job.challenge.movieapp.ui.components.ScreenUiNonSuccessCommon
 import job.challenge.movieapp.ui.components.util.CenteredColumn
 import job.challenge.movieapp.ui.components.util.CenteredRow
-import job.challenge.movieapp.ui.components.util.LargePadding
 import job.challenge.movieapp.ui.components.util.MediumPadding
 import job.challenge.movieapp.ui.components.util.RoundRectangleShape
 import job.challenge.movieapp.ui.components.util.SmoothHorizontalDivider
@@ -55,6 +53,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun MovieDetailsScreen(
     movieId: Int? = null,
+    onNavToMovie: (Int) -> Unit,
     vm: MovieDetailsViewModel = hiltViewModel()
 ){
     val movie by vm.movie.collectAsState()
@@ -66,12 +65,12 @@ fun MovieDetailsScreen(
     }
 
     (movie as? State.Success)?.let {
-        MovieDetailsScreenUi(it)
+        MovieDetailsScreenUi(it, onNavToMovie = onNavToMovie)
     } ?: ScreenUiNonSuccessCommon(movie)
 }
 
 @Composable
-fun MovieDetailsScreenUi(movie: State.Success<Movie>){
+fun MovieDetailsScreenUi(movie: State.Success<Movie>, onNavToMovie: (Int) -> Unit){
     var isScreenLoaded by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -173,6 +172,17 @@ fun MovieDetailsScreenUi(movie: State.Success<Movie>){
             }
 
             SmoothHorizontalDivider(modifier = Modifier.padding(vertical = MediumPadding))
+
+            EzText(
+                R.string.other_movies,
+                fontWeight = FontWeight.Bold,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                textStyle = MaterialTheme.typography.headlineSmall
+            )
+
+            MovieCarousel(movie.value.otherMovies, onNavToMovie = onNavToMovie)
         }
     }
 }
@@ -193,5 +203,5 @@ fun MovieDetailsScreenUiPreview() = PreviewComposable {
         popularity = 219.0006f,
         spokenLanguages = listOf("EN", "FR")
     ))
-    MovieDetailsScreenUi(movie)
+    MovieDetailsScreenUi(movie, {})
 }
