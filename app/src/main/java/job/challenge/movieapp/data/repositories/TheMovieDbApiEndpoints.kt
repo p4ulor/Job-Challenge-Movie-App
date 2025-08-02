@@ -33,7 +33,7 @@ class TheMovieDbApiEndpoints {
         }
     }
 
-    private enum class QueryKey {
-        page
+    enum class QueryKey (val minValue: Int) {
+        page(minValue = 1)
     }
 }

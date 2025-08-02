@@ -13,4 +13,7 @@ data class MovieList(
         val posterPathUrl: String,
         val voteAverage: Float
     )
+
+    fun hasPrev() = page != 1
+    fun hasNext() = page != totalPages
 }

@@ -6,6 +6,10 @@
     <string name="setup_token">Setup your TMDB token</string>
     <string name="bearer_token">Bearer token</string>
     <string name="save">Save</string>
-    <string name="saved_gemini_key">Token saved</string>
+    <string name="saved_bearer_token">Token saved</string>
     <string name="a_highly_unexpected_error_occued">A highly unexpected error occurred</string>
+    <string name="movie_list">Movie List</string>
+    <string name="movie_details">Movie Details</string>
+    <string name="account_settings">Account Settings</string>
+    <string name="languages">Languages</string>
 </resources>

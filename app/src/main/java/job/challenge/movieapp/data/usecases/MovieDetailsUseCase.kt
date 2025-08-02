@@ -6,13 +6,14 @@ import job.challenge.movieapp.data.domain.PresetException
 import job.challenge.movieapp.data.repositories.MoviesRepository
 import job.challenge.movieapp.data.repositories.TheMovieDbApiEndpoints
 import job.challenge.movieapp.e
+import java.util.Locale
 import javax.inject.Inject
 
 /**
  * Use cases are used in ViewModels. They handle exceptions from the repository, interpret exceptions
  * and bridge the gap between the (UI) domain later and the (raw) data layer coming from the repositories
  */
-class MoviesDetailsUseCase @Inject constructor(
+class MovieDetailsUseCase @Inject constructor(
     private val moviesRepository: MoviesRepository
 ) {
     suspend fun getMovieById(id: Int): State<Movie> {
@@ -30,7 +31,7 @@ class MoviesDetailsUseCase @Inject constructor(
                     voteAverage = it.vote_average,
                     voteCount = it.vote_count,
                     popularity = it.popularity,
-                    spokenLanguages = it.spoken_languages.map { it.iso_639_1 }
+                    spokenLanguages = it.spoken_languages.map { it.iso_639_1.uppercase(Locale.getDefault()) }
                 )
             }.let { movie ->
                 State.Success(movie)

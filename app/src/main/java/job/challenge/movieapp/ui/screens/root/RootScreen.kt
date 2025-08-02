@@ -1,6 +1,5 @@
 package job.challenge.movieapp.ui.screens.root
 
-import Screen
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -52,6 +51,7 @@ import job.challenge.movieapp.ui.components.MaterialIcons
 import job.challenge.movieapp.ui.components.MaterialIconsExt
 import job.challenge.movieapp.ui.components.util.CenteredRow
 import job.challenge.movieapp.ui.components.util.SystemNavigationBarHeight
+import job.challenge.movieapp.ui.screens.Screen
 import job.challenge.movieapp.ui.screens.movie.details.MovieDetailsScreen
 import job.challenge.movieapp.ui.screens.movie.list.MovieListScreen
 import job.challenge.movieapp.ui.screens.settings.SettingsScreen
@@ -84,16 +84,16 @@ fun RootScreen() = Surface {
 
     Scaffold(
         Modifier.fillMaxSize(),
-        contentWindowInsets = WindowInsets(bottom = SystemNavigationBarHeight), // Only disable enableEdgeToEdge to the bottom bar
+        contentWindowInsets = WindowInsets(bottom = SystemNavigationBarHeight), // to only disable enableEdgeToEdge on the bottom bar
         topBar = {
             TopAppBar(
                 title = {
                     CenteredRow {
                         EzText(
-                            R.string.app_name,
-                            Modifier.offset(x = -MaterialIconsExt.MenuOpen.defaultWidth),
+                            currentScreen.title,
+                            Modifier.offset(x = -MaterialIconsExt.MenuOpen.defaultWidth), // offset to center the text
                             textAlign = TextAlign.Center
-                        ) // offset to center the text
+                        )
                     }
                 },
                 navigationIcon = {

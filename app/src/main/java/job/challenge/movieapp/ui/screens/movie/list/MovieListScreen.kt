@@ -1,35 +1,35 @@
 package job.challenge.movieapp.ui.screens.movie.list
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.icons.automirrored.filled.TrendingUp
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.automirrored.filled.ArrowLeft
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
+import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
+import androidx.compose.material.icons.filled.ArrowRightAlt
+import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,9 +40,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import job.challenge.movieapp.R
 import job.challenge.movieapp.android.viewmodels.utils.State
 import job.challenge.movieapp.data.domain.MovieList
-import job.challenge.movieapp.data.utils.trimToDecimals
-import job.challenge.movieapp.i
-import job.challenge.movieapp.ui.components.CoilImagePoster
 import job.challenge.movieapp.ui.components.EzText
 import job.challenge.movieapp.ui.components.LoadingSpinner
 import job.challenge.movieapp.ui.components.MaterialIcons
@@ -50,11 +47,9 @@ import job.challenge.movieapp.ui.components.MaterialIconsExt
 import job.challenge.movieapp.ui.components.util.CenteredRow
 import job.challenge.movieapp.ui.components.util.LargePadding
 import job.challenge.movieapp.ui.components.util.MediumPadding
-import job.challenge.movieapp.ui.components.util.RoundRectangleShape
 import job.challenge.movieapp.ui.components.util.SmallMediumPadding
+import job.challenge.movieapp.ui.components.util.SmallPadding
 import job.challenge.movieapp.ui.theme.PreviewComposable
-import job.challenge.movieapp.ui.theme.getRandomContainerColor
-import kotlin.math.pow
 
 @Composable
 fun MovieListScreen(
@@ -77,69 +72,68 @@ fun MovieListScreen(
     }
 
     if (isScreenGranted) {
-        MovieListScreenUi(moviesList)
+        MovieListScreenUi(moviesList, onNewPage = {
+            vm.getNowPlaying(page = it)
+        })
     } else {
         MovieListScreenUiNotGranted(hasConnection, isUserAuthenticated)
     }
 }
 
 private const val MAX_MOVIES_PER_ROW = 2
-private val MAX_POSTER_HEIGHT = 128.dp
 
 @Composable
-fun MovieListScreenUi(moviesList: State<MovieList>) {
+fun MovieListScreenUi(moviesList: State<MovieList>, onNewPage: (Int) -> Unit) {
     when (moviesList) {
-        is State.Loading -> LoadingSpinner()
+        is State.Loading -> {
+            LoadingSpinner()
+        }
 
         is State.Success -> {
-            Column(
-                Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                LazyVerticalGrid( // Instead of this we could have used LazyColumn and items(moviesList.chunked(2)) to center the items vertically
-                    columns = GridCells.Fixed(MAX_MOVIES_PER_ROW),
-                    contentPadding = PaddingValues(SmallMediumPadding),
-                    horizontalArrangement = Arrangement.spacedBy(
-                        space = MediumPadding,
-                        alignment = Alignment.CenterHorizontally
-                    ),
-                    verticalArrangement = Arrangement.spacedBy(
-                        MediumPadding,
-                        Alignment.CenterVertically
-                    ),
-                    modifier = Modifier.fillMaxSize()
+            CenteredColumn {
+                Column(
+                    Modifier.fillMaxWidth().weight(1f),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    items(moviesList.value.results) {item ->
-                        Surface(
-                            Modifier.fillMaxWidth()
-                                .fillMaxHeight()
-                                .clip(RoundRectangleShape)
-                                .border(1.dp, MaterialTheme.colorScheme.outline, RoundRectangleShape),
-                            color = getRandomContainerColor()
-                        ) {
-                            CenteredColumn(Modifier.fillMaxWidth().padding(MediumPadding)) {
-                                Text(item.title, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-                                Text(item.originalTitle, Modifier.alpha(0.7f), textAlign = TextAlign.Center, style = MaterialTheme.typography.labelSmall)
-                                CoilImagePoster(item.posterPathUrl, MAX_POSTER_HEIGHT)
-                                CenteredRow {
-                                    MaterialIcons.CalendarMonth.apply {
-                                        Icon(this, this.name)
-                                    }
-                                    Text(
-                                        "${item.releaseDate}",
-                                        style = MaterialTheme.typography.labelSmall,
-                                    )
-                                    MaterialIconsExt.TrendingUp.apply {
-                                        Icon(this, this.name)
-                                    }
-                                    Text(
-                                        "${item.voteAverage.trimToDecimals(2)}",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        maxLines = 1
-                                    )
-                                }
+                    LazyColumn( // Not using LazyVerticalGrid with columns = GridCells.Fixed(2) because it doesn't allow centering the columns vertically
+                        contentPadding = PaddingValues(SmallMediumPadding),
+                        verticalArrangement = Arrangement.spacedBy(
+                            MediumPadding,
+                            Alignment.CenterVertically
+                        ),
+                    ) {
+                        items(moviesList.value.results.chunked(MAX_MOVIES_PER_ROW)) { moviePair ->
+                            CenteredRow {
+                                MovieListItem(moviePair.first())
+                                moviePair.getOrNull(1)?.let { secondMovie ->
+                                    MovieListItem(secondMovie)
+                                } ?: MovieListItem(moviePair.first(), Modifier.alpha(0f)) // So that if the list is odd, the last item doesn't occupy the whole row width
                             }
+                        }
+                    }
+                }
+
+                CenteredRow(Modifier.padding(bottom = SmallMediumPadding)) {
+                    Button(onClick = {
+                        onNewPage(moviesList.value.page - 1)
+                    },
+                        enabled = moviesList.value.hasPrev()
+                    ) {
+                        MaterialIconsExt.ArrowLeft.apply {
+                            Icon(this, this.name)
+                        }
+                    }
+
+                    Text((moviesList.value.page).toString(), Modifier.padding(horizontal = SmallPadding), fontWeight = FontWeight.Bold)
+
+                    Button(onClick = {
+                        onNewPage(moviesList.value.page + 1)
+                    },
+                        enabled = moviesList.value.hasNext()
+                    ) {
+                        MaterialIconsExt.ArrowRight.apply {
+                            Icon(this, this.name)
                         }
                     }
                 }
@@ -172,7 +166,7 @@ fun MovieListScreenUi(moviesList: State<MovieList>) {
 fun MovieListScreenUiPreview() = PreviewComposable {
     val movies = MovieList(
         results = buildList {
-            repeat(10) { index ->
+            repeat(3) { index ->
                 add(
                     MovieList.MovieListItem(
                         id = index,
@@ -187,7 +181,18 @@ fun MovieListScreenUiPreview() = PreviewComposable {
                 add(
                     MovieList.MovieListItem(
                         id = index,
-                        title = "Anime Anime Anime Anime Anime Anime",
+                        title = "Anime Anime Anime Anime Anime Anime Anime Anime Anime",
+                        originalTitle = "Anime Anime Anime Anime Anime Anime",
+                        releaseDate = "2025-06-06",
+                        posterPathUrl = "https://image.tmdb.org//t/p/w500/aFRDH3P7TX61FVGpaLhKr6QiOC1.jpg",
+                        voteAverage = 8.068f
+                    )
+                )
+
+                add(
+                    MovieList.MovieListItem(
+                        id = index,
+                        title = "Box",
                         originalTitle = "Anime Anime Anime Anime Anime Anime",
                         releaseDate = "2025-06-06",
                         posterPathUrl = "https://image.tmdb.org//t/p/w500/aFRDH3P7TX61FVGpaLhKr6QiOC1.jpg",
@@ -197,20 +202,21 @@ fun MovieListScreenUiPreview() = PreviewComposable {
             }
         },
         page = 1,
-        totalPages = 1
+        totalPages = 2
     )
-    MovieListScreenUi(State.Success(movies))
+    MovieListScreenUi(State.Success(movies), {})
 }
 
 @Preview
 @Composable
 fun MovieListScreenUiLoadingPreview() = PreviewComposable {
-    val movies = null
-    MovieListScreenUi(State.Loading)
+    MovieListScreenUi(State.Loading, {})
 }
 
 @Preview
 @Composable
 fun MovieListScreenUiErrorPreview() = PreviewComposable {
-    MovieListScreenUi(State.Error("HTTP Error: Invalid API key: You must be granted a valid key."))
+    MovieListScreenUi(
+        State.Error("HTTP Error: Invalid API key: You must be granted a valid key."), {}
+    )
 }

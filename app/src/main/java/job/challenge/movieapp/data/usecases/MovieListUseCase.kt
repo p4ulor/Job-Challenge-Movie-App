@@ -15,9 +15,9 @@ import javax.inject.Inject
 class MovieListUseCase @Inject constructor(
     private val moviesRepository: MoviesRepository
 ) {
-    suspend fun getNowPlaying(): State<MovieList> {
+    suspend fun getNowPlaying(page: Int?): State<MovieList> {
         return try {
-            moviesRepository.getNowPlaying().let {
+            moviesRepository.getNowPlaying(page).let {
                 MovieList(
                     results = it.results.map { item ->
                         MovieList.MovieListItem(

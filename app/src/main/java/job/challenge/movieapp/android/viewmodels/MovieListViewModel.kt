@@ -11,6 +11,7 @@ import job.challenge.movieapp.data.domain.MovieList
 import job.challenge.movieapp.data.local.preferences.UserPreferences
 import job.challenge.movieapp.data.local.preferences.dataStore
 import job.challenge.movieapp.data.usecases.MovieListUseCase
+import job.challenge.movieapp.i
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
@@ -38,10 +39,16 @@ class MovieListViewModel @Inject constructor(
         }
     }
 
-    fun getNowPlaying() {
+    fun getNowPlaying(page: Int? = null) {
         launch {
             _movieList.value = State.Loading
-            _movieList.value = movieListUseCase.getNowPlaying()
+            val currentPage = (movieList.value as? State.Success)?.value?.page
+            i("getNowPlaying requestedPage=$page currentPage=$currentPage")
+            _movieList.value = movieListUseCase.getNowPlaying(page ?: currentPage)
         }
+    }
+
+    override fun onCleared() {
+        i("MovieListViewModel destroyed")
     }
 }

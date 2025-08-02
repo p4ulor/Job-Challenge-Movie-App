@@ -111,7 +111,7 @@ fun SettingsScreenUi(storedToken: String?, onSetBearerToken: (newToken: String) 
                     if (it.isNotEmpty()) {
                         i("Saving bearerToken Key")
                         onSetBearerToken(it)
-                        ctx.toast(R.string.saved_gemini_key)
+                        ctx.toast(R.string.saved_bearer_token)
                     }
                 }
             }

@@ -106,8 +106,8 @@ class KtorHttpClient(private val hostName: String) : Closeable {
 
     suspend fun get(
         path: String,
-        headers: Headers = defaultHeaders,
-        queryParams: QueryParams = emptyList()
+        queryParams: QueryParams = emptyList(),
+        headers: Headers = defaultHeaders
     ): HttpResponse {
         val response = httpClient.get {
             withUrl(path, queryParams)

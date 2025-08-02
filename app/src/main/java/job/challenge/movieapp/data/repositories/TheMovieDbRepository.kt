@@ -4,6 +4,7 @@ import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.call.body
 import job.challenge.movieapp.data.client.KtorHttpClient
+import job.challenge.movieapp.data.client.QueryParam
 import job.challenge.movieapp.data.client.handle
 import job.challenge.movieapp.data.domain.HttpError
 import job.challenge.movieapp.data.domain.NoBearerTokenSet
@@ -25,10 +26,16 @@ class TheMovieDbRepository @Inject constructor(
      * https://developer.themoviedb.org/reference/movie-now-playing-list
      */
     @Throws(PresetException::class)
-    override suspend fun getNowPlaying(): MoviesNowPlayingResponse {
+    override suspend fun getNowPlaying(page: Int?): MoviesNowPlayingResponse {
         checkAuthorization()
         val path = TheMovieDbApiEndpoints.Resources.Movie.NowPlaying.path
-        return http.get(path)
+        val queryParams = listOf(
+            QueryParam(
+                TheMovieDbApiEndpoints.QueryKey.page.name,
+                page?.toString() ?: TheMovieDbApiEndpoints.QueryKey.page.minValue.toString()
+            )
+        )
+        return http.get(path, queryParams)
             .handle(
                 onSuccess = {
                     it.body<MoviesNowPlayingResponse>()

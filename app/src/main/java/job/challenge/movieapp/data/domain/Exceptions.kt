@@ -9,4 +9,4 @@ class NoBearerTokenSet : PresetException("No bearer token set")
 class HttpError(
     body: ErrorResponse,
     errorCode: Int
-): PresetException("HTTP Error: ${body.status_message}")
+): PresetException("HTTP Error - ${body.status_message}")
