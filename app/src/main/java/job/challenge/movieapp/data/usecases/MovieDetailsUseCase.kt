@@ -1,5 +1,6 @@
 package job.challenge.movieapp.data.usecases
 
+import job.challenge.movieapp.android.utils.NetworkObserver
 import job.challenge.movieapp.android.viewmodels.utils.State
 import job.challenge.movieapp.data.domain.Movie
 import job.challenge.movieapp.data.domain.PresetException
@@ -20,7 +21,8 @@ import javax.inject.Inject
  * and bridge the gap between the (UI) domain later and the (raw) data layer coming from the repositories
  */
 class MovieDetailsUseCase @Inject constructor(
-    private val moviesRepository: MoviesRepository
+    private val moviesRepository: MoviesRepository,
+    val networkObserver: NetworkObserver,
 ) {
 
     private val _movie = MutableStateFlow<State<Movie>>(State.Loading)

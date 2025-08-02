@@ -1,6 +1,7 @@
 package job.challenge.movieapp.data.usecases
 
 import android.content.Context
+import job.challenge.movieapp.android.utils.NetworkObserver
 import job.challenge.movieapp.android.viewmodels.utils.State
 import job.challenge.movieapp.data.domain.MovieList
 import job.challenge.movieapp.data.domain.PresetException
@@ -20,7 +21,8 @@ import javax.inject.Inject
  * And because Hilt destroys viewmodels when exiting the composable screen
  */
 class MovieListUseCase @Inject constructor(
-    private val moviesRepository: MoviesRepository
+    private val moviesRepository: MoviesRepository,
+    val networkObserver: NetworkObserver,
 ) {
 
     private val _isUserAuthenticated = MutableStateFlow(false)
@@ -31,9 +33,7 @@ class MovieListUseCase @Inject constructor(
 
     suspend fun loadUserPrefs(ctx: Context){
         UserPreferences.getFrom(ctx.dataStore).also {
-            if (it.tmdbToken != null) {
-                _isUserAuthenticated.value = true
-            }
+            _isUserAuthenticated.value = it.tmdbToken?.isNotEmpty() == true
         }
     }
 

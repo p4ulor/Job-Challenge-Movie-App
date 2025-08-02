@@ -31,7 +31,7 @@ class TheMovieDbRepository @Inject constructor(
         val queryParams = listOf(
             QueryParam(
                 TheMovieDbApiEndpoints.QueryKey.page.name,
-                page?.toString() ?: TheMovieDbApiEndpoints.QueryKey.page.minValue.toString()
+                page?.toString() ?: TheMovieDbApiEndpoints.QueryKey.page.default.toString()
             )
         )
         return http.get(path, queryParams)

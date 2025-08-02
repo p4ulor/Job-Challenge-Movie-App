@@ -15,17 +15,18 @@ import javax.inject.Inject
 class MovieListViewModel @Inject constructor(
     @ApplicationContext private val ctx: Context,
     private val movieListUseCase: MovieListUseCase,
-    val networkObserver: NetworkObserver,
 ) : ViewModel() {
 
     init {
         i("init MovieListViewModel")
         launch {
-            combine(networkObserver.hasConnection, movieListUseCase.isUserAuthenticated) { hasConnection, isUserAuthenticated ->
-                hasConnection && isUserAuthenticated
-            }.collect { isScreenGranted ->
-                if (isScreenGranted) {
-                    getNowPlaying()
+            with(movieListUseCase){
+                combine(networkObserver.hasConnection, isUserAuthenticated) { hasConnection, isUserAuthenticated ->
+                    hasConnection && isUserAuthenticated
+                }.collect { isScreenGranted ->
+                    if (isScreenGranted) {
+                        getNowPlaying()
+                    }
                 }
             }
         }
@@ -33,6 +34,7 @@ class MovieListViewModel @Inject constructor(
 
     val movieList = movieListUseCase.movieList
     val isUserAuthenticated = movieListUseCase.isUserAuthenticated
+    val hasConnection = movieListUseCase.networkObserver.hasConnection
 
     fun loadUserPrefs(){
         launch {

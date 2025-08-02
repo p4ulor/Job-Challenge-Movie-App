@@ -30,10 +30,12 @@ class TheMovieDbApiEndpoints {
         const val VERSION = 3
         val defaultHeaders = headers {
             append(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            append(QueryKey.include_adult.name, QueryKey.include_adult.default.toString())
         }
     }
 
-    enum class QueryKey (val minValue: Int) {
-        page(minValue = 1)
+    enum class QueryKey (val default: Any) { // Any because it will all go to string anyways
+        page(default = 1),
+        include_adult(false)
     }
 }

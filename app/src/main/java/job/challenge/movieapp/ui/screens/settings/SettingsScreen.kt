@@ -114,11 +114,9 @@ fun SettingsScreenUi(storedToken: String?, onSetBearerToken: (newToken: String) 
         Button(
             onClick = {
                 token?.let {
-                    if (it.isNotEmpty()) {
-                        i("Saving bearerToken Key")
-                        onSetBearerToken(it)
-                        ctx.toast(R.string.saved_bearer_token)
-                    }
+                    i("Saving bearerToken Key")
+                    onSetBearerToken(it)
+                    ctx.toast(R.string.saved_bearer_token)
                 }
             }
         ) {

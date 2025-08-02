@@ -46,8 +46,8 @@ fun MovieListScreen(
     onNavToMovie: (Int) -> Unit,
     vm: MovieListViewModel = hiltViewModel()
 ) {
-    val hasConnection by vm.networkObserver.hasConnection.collectAsState(initial = null)
-    val isUserAuthenticated by vm.isUserAuthenticated.collectAsState(initial = null)
+    val hasConnection by vm.hasConnection.collectAsState(initial = false)
+    val isUserAuthenticated by vm.isUserAuthenticated.collectAsState(initial = false)
     val moviesList by vm.movieList.collectAsState()
     var isScreenGranted by rememberSaveable { mutableStateOf(false) }
 

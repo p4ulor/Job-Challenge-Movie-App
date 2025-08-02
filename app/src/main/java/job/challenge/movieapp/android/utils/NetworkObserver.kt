@@ -24,14 +24,17 @@ class NetworkObserver(context: Context) {
     val hasConnection = callbackFlow {
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
+                i("NetworkObserver onAvailable")
                 trySend(true)
             }
 
             override fun onLost(network: Network) {
+                i("NetworkObserver onLost")
                 trySend(false)
             }
 
             override fun onUnavailable() {
+                i("NetworkObserver onUnavailable")
                 trySend(false)
             }
         }

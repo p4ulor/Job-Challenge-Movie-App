@@ -28,13 +28,19 @@ object DependencyInjection {
 
     @Provides
     @Singleton
-    fun moviesListUseCase(repo: TheMovieDbRepository) = MovieListUseCase(repo)
-
-    @Provides
-    @Singleton
-    fun movieDetailsUseCase(repo: TheMovieDbRepository) = MovieDetailsUseCase(repo)
-
-    @Provides
-    @Singleton
     fun networkObserver(@ApplicationContext ctx: Context) = NetworkObserver(ctx)
+
+    @Provides
+    @Singleton
+    fun moviesListUseCase(
+        repo: TheMovieDbRepository,
+        netObserver: NetworkObserver
+    ) = MovieListUseCase(repo, netObserver)
+
+    @Provides
+    @Singleton
+    fun movieDetailsUseCase(
+        repo: TheMovieDbRepository,
+        netObserver: NetworkObserver
+    ) = MovieDetailsUseCase(repo, netObserver)
 }
