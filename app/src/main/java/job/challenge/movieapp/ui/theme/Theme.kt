@@ -176,8 +176,10 @@ private fun SampleComposable(){
             }
 
             var isChecked by remember { mutableStateOf(true) }
-            Switch(checked = isChecked, onCheckedChange = { isChecked = !isChecked })
-            Switch(checked = false, onCheckedChange = { isChecked = !isChecked })
+            CenteredRow {
+                Switch(checked = isChecked, onCheckedChange = { isChecked = !isChecked })
+                Switch(checked = false, onCheckedChange = { isChecked = !isChecked })
+            }
 
             var slider by remember { mutableFloatStateOf(0.5f) }
             Slider(value = slider, onValueChange = { slider = it })

@@ -61,13 +61,34 @@ Hilt dependency injection with multiple modules
 
 ## Dates
 - Challenge submitted to me at 11:27 (thursday) 31/7/2025
-- Deadline date: 4/8/2025 (monday)
-- Submission date: 
+- Deadline date: 4/8/2025 (monday) in the evening
+- Finished date: 2/U/2025 (saturday)
+- Submission date: 4/8/2025 (monday) at 11:06
 
-## Final result preview
+## Final result
+### [Video preview 🎥](https://mega.nz/file/bo51VDDS#65Y39lkLPTtosbJnhfLpNdJ7m0k3TXTcIpe0S_FNutE)
 
+| <img src="./docs/1.png" height=300px> </img> | <img src="./docs/2.png" height=300px> </img>  | <img src="./docs/3.png" height=300px> </img>  | <img src="./docs/4.png" height=300px> </img>  |
+|-------------------|---|---|---|
 
+## Extra work done for the challenge
+In addition to meeting all the requirements and evaluation criteria, I also added a section in the individual movie screen that can contain up to 5 random movies in a horizontal carousel format (sometimes it appears empty because it may be requesting a (random) ID that no longer exists in the API).
+
+The app includes a navigation drawer that allows access to the movies screen and the Bearer token configuration screen so you can use the TMDB API.
+
+The composables (UI) are well-structured, scalable, and dynamic based on the state of the data and its values. These are also abstracted from the View Model, allowing for previews (Compose Previews) of the screens in Android Studio. And the app's theme (color palette) is based on the [company] theme.
 
 ## Resources used
 - https://developer.android.com/training/dependency-injection/hilt-android
 - https://kotlinlang.org/docs/ksp-quickstart.html
+
+> [!TIP]
+> I had greats interviews with the HR recruiter, senior Android developer in the technical interview (nailed this interview) and with the CTO of the start-up. The company is not a B2B, it develops it's own product.
+>
+> Didn't get in, because they found someone with better "technology and experience" level. Even though the senior Android dev told me they really needed people (multiple persons).
+>
+> I was said that:
+> 
+> *There was some difficulty in making a decision, as we had several good candidates in the process. The team really enjoyed meeting you, and the feedback was positive. They said you stood by your work and provided good solutions to problems. You did several "extras" during the challenge, and you were very focused on safety, which left a good impression.*
+>
+> Fun fact: in the technical interview, when the senior dev opened up his emulator, out of the multiple "movie" apps installed in his grid of apps, mine was the only one with an icon. This, plus UI/UX concerns, composable previews, extra screen for secret token setup, scalable architecture, video preview shared and doing the app in 3 days (with git history shared for proof) were apparently not enough.

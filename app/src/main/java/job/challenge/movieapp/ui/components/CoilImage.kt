@@ -43,7 +43,7 @@ fun CoilImage(url: String, height: Dp, modifier: Modifier = Modifier, addBorder:
             .padding(MediumPadding)
             .heightIn(max = height)
             .clip(RoundRectangleShape)
-            .addIfTrue(addBorder) {
+            .addIfTrue(condition = addBorder) {
                 Modifier.border(1.dp, MaterialTheme.colorScheme.outline, RoundRectangleShape)
             },
         contentScale = ContentScale.Fit,
